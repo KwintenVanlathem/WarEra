@@ -120,3 +120,73 @@ class Database():
 		with this.dbConnection.cursor() as cur:
 			execute_values(cur, sql, rows)
 			this.dbConnection.commit()
+
+			
+	def getRecentBattles(this):
+		battleIDs = []
+
+		sql = """
+			SELECT "battleID"
+			FROM public."battleHistory"
+			WHERE "createdAt" > now() - interval '40 hours';
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			cur.execute(sql)
+			for battle in cur.fetchall():
+				battleIDs.append(battle[0])
+
+		return battleIDs
+
+	def updateBattleHistory(this, battles):
+		rows = []
+		for battle in battles:
+			rows.append((battle.get("_id"), battle.get("createdAt"), battle.get("attacker").get("country"), battle.get("defender").get("country"), json.dumps(battle)))
+
+		sql = """
+			INSERT INTO public."battleHistory" ("battleID", "createdAt", "attackerID", "defenderID", "value")
+			VALUES %s
+			ON CONFLICT ("battleID")
+			DO UPDATE SET
+				value = EXCLUDED.value;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
+
+	def updateBattleDamageRankings(this, battleRanks):
+		rows = []
+		for battleRank in battleRanks:
+			rows.append((battleRank.get("battleID"), battleRank.get("country"), battleRank.get("side"), battleRank.get("value"), battleRank.get("rank")))
+
+		sql = """
+			INSERT INTO public."battleCountryDamage" ("battleID", "countryID", "side", "damage", "rank")
+			VALUES %s
+			ON CONFLICT ("battleID", "countryID", "side")
+			DO UPDATE SET
+				damage = EXCLUDED.damage,
+				rank = EXCLUDED.rank;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
+
+	def updateBattleMoneyRankings(this, battleRanks):
+		rows = []
+		for battleRank in battleRanks:
+			rows.append((battleRank.get("battleID"), battleRank.get("country"), battleRank.get("side"), battleRank.get("value"), battleRank.get("rank")))
+
+		sql = """
+			INSERT INTO public."battleCountryMoney" ("battleID", "countryID", "side", "money", "rank")
+			VALUES %s
+			ON CONFLICT ("battleID", "countryID", "side")
+			DO UPDATE SET
+				money = EXCLUDED.money,
+				rank = EXCLUDED.rank;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
