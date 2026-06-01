@@ -35,7 +35,7 @@ def getUsersBatched(userIDs):
 		response = apiClient.get(url)
 
 		for item in response:
-			result.append(item)
+			result.append(item["result"]["data"])
 
 	return result
 

@@ -72,7 +72,7 @@ class Database():
 	def updateUsers(this, users):
 		rows = []
 		for user in users:
-			rows.append((user["result"]["data"].get("_id"), user["result"]["data"].get("username")))
+			rows.append((user.get("_id"), user.get("username")))
 
 		sql = """
 			INSERT INTO public.user ("userID", name)
@@ -89,7 +89,7 @@ class Database():
 	def addUsersRaw(this, users):
 		rows = []
 		for user in users:
-			rows.append((datetime.now(pytz.utc), user["result"]["data"].get("_id"), json.dumps(user)))
+			rows.append((datetime.now(pytz.utc), user.get("_id"), json.dumps(user)))
 
 		sql = """
 			INSERT INTO public."userRaw" ("eventTime", "userID", "value")
