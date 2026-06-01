@@ -190,3 +190,21 @@ class Database():
 		with this.dbConnection.cursor() as cur:
 			execute_values(cur, sql, rows)
 			this.dbConnection.commit()
+
+	def updateRegions(this, regions):
+		rows = []
+		for region in regions:
+			rows.append((region.get("_id"), region.get("country"), region.get("name")))
+
+		sql = """
+			INSERT INTO public.region ("regionID", "countryID", name)
+			VALUES %s
+			ON CONFLICT ("regionID")
+			DO UPDATE SET
+				"countryID" = EXCLUDED."countryID",
+				name = EXCLUDED.name;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
