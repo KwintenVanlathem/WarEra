@@ -140,15 +140,19 @@ class Database():
 
 	def updateBattleHistory(this, battles):
 		rows = []
+		knownBattles = []
 		for battle in battles:
-			rows.append((battle.get("_id"), battle.get("createdAt"), battle.get("attacker").get("country"), battle.get("defender").get("country"), json.dumps(battle)))
+			if battle.get("_id") not in knownBattles:
+				rows.append((battle.get("_id"), battle.get("createdAt"), battle.get("attacker").get("country"), battle.get("defender").get("country"), json.dumps(battle), battle.get("defender").get("region")))
+				knownBattles.append(battle.get("_id"))
 
 		sql = """
-			INSERT INTO public."battleHistory" ("battleID", "createdAt", "attackerID", "defenderID", "value")
+			INSERT INTO public."battleHistory" ("battleID", "createdAt", "attackerID", "defenderID", "value", "regionID")
 			VALUES %s
 			ON CONFLICT ("battleID")
 			DO UPDATE SET
-				value = EXCLUDED.value;
+				value = EXCLUDED.value,
+				"regionID" = EXCLUDED."regionID";
 		"""
 
 		with this.dbConnection.cursor() as cur:
