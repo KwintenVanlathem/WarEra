@@ -212,3 +212,26 @@ class Database():
 		with this.dbConnection.cursor() as cur:
 			execute_values(cur, sql, rows)
 			this.dbConnection.commit()
+
+	def updateBonus(this, bonuses):
+		rows = []
+		for bonus in bonuses:
+			rows.append((
+				bonus.get("item"),
+				datetime.now(pytz.utc),
+				bonus.get("bonus"),
+				bonus.get("depositBonus"),
+				bonus.get("strategicBonus"),
+				bonus.get("ethicSpecializationBonus"),
+				bonus.get("regionId"),
+				bonus.get("taxPercent")
+			))
+
+		sql = """
+			INSERT INTO public.bonus ("itemCode", "eventTime", bonus, deposit, strategic, ethic, "regionID", taxes)
+			VALUES %s;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()

@@ -79,7 +79,6 @@ def pullMoneyTransfers():
 	db.updateMoneyTransfers(moneyTransfers)
 
 def getCountryBattlesBatched(countryIDs):
-	db = Database()
 	result = []
 
 	for part in chunk_list(countryIDs, 10):
@@ -224,3 +223,30 @@ def updateRegions():
 
 	db = Database()
 	db.updateRegions(regions)
+
+
+def getBestRegions(itemCodes):
+	regions = []
+
+	procedures = ["company.getRecommendedRegionIdsByItemCode"] * len(itemCodes)
+
+	payload = {
+		str(i): {
+			"itemCode": str(item),
+			"includeDeposit": True
+		}
+		for i, item in enumerate(itemCodes)
+	}
+
+	apiClient = APIClient()
+	result = apiClient.getBatched(procedures, payload)
+	
+	for i in range(1, len(result)):
+		item = itemCodes[i]
+		bonus = result[i][0]
+		bonus["item"] = item
+	
+		regions.append(bonus)
+
+	db = Database()
+	db.updateBonus(regions)
