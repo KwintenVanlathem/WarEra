@@ -56,6 +56,65 @@ def pullCitizens():
 	db.updateUsers(users)
 	db.addUsersRaw(users)
 
+def pullPlayerHistory():
+	apiClient = APIClient()
+	procedure = "user.getUsersByCountry"
+	payload = {
+		"countryId": "6813b6d446e731854c7ac7a4", # Only Belgium for now
+		"limit": 100,
+	}
+	users = apiClient.getByCursor(procedure, payload)
+
+	userIDs = []
+	for user in users:
+		userIDs.append(user.get("_id"))
+
+	usersRaw = getUsersBatched(userIDs)
+
+	users = []
+	for user in usersRaw:
+		try:
+			skillset = invested_points_by_category(user.get("skills"))
+
+			info = {
+				"id": user.get("_id"),
+				"username": user.get("username"),
+				"mu": user.get("mu"),
+				"country": user.get("country"),
+				"level": user.get("leveling").get("level"),
+				"isLeveling": user.get("leveling").get("level") < 20,
+				"totalDamage": user.get("rankings", {}).get("userDamages", {}).get("value", 0),
+				"moneyWealth": user.get("stats").get("wealth").get("money"),
+				"itemWealth": user.get("stats").get("wealth").get("items"),
+				"equipmentWealth": user.get("stats").get("wealth").get("equipments"),
+				"weaponWealth": user.get("stats").get("wealth").get("weapons"),
+				"companyWealth": user.get("stats").get("wealth").get("companies"),
+				"totalWealth": user.get("stats").get("wealth").get("total"),
+			}
+
+			if user.get("buffs") == None:
+				info["pillStatus"] = 'unpilled'
+			elif user.get("buffs").get("buffCodes") != None:
+				info["pillStatus"] = 'buff'
+			elif user.get("buffs").get("debuffCodes") != None:
+				info["pillStatus"] = 'debuff'
+
+			if skillset.get("combat_pct") > 0.8:
+				info["buildType"] = 'war'
+			elif skillset.get("economic_pct") > 0.8:
+				info["buildType"] = 'eco'
+			else:
+				info["buildType"] = 'hybrid'
+
+			users.append(info)
+
+		except:
+			print(json.dumps(user, indent=2))
+			raise
+
+	db = Database()
+	db.addUsersHistory(users)
+
 def updateCountries():
 	apiClient = APIClient()
 	procedure = "country.getAllCountries"
@@ -250,3 +309,62 @@ def getBestRegions(itemCodes):
 
 	db = Database()
 	db.updateBonus(regions)
+	
+def skill_points_from_level(level: int) -> int:
+    """Returns the total skill points invested to reach a given level."""
+    return level * (level + 1) // 2
+
+
+def invested_points_per_skill(skills: dict) -> dict[str, int]:
+    """
+    Converts a skills JSON into invested skill points per skill.
+
+    Args:
+        skills: The skills JSON object.
+
+    Returns:
+        A dictionary mapping skill names to invested skill points.
+    """
+    return {
+        skill_name: skill_points_from_level(skill_data.get("level", 0))
+        for skill_name, skill_data in skills.items()
+    }
+
+ECONOMIC_SKILLS = {
+    "energy",
+    "companies",
+    "entrepreneurship",
+    "production",
+    "management",
+}
+
+COMBAT_SKILLS = {
+    "health",
+    "hunger",
+    "attack",
+    "criticalChance",
+    "criticalDamages",
+    "armor",
+    "precision",
+    "dodge",
+    "lootChance",
+}
+
+
+def invested_points_by_category(skills: dict) -> dict[str, int]:
+    invested = invested_points_per_skill(skills)
+
+    eco = sum(invested.get(skill, 0) for skill in ECONOMIC_SKILLS)
+    combat = sum(invested.get(skill, 0) for skill in COMBAT_SKILLS)
+
+    return {
+        "economic": eco,
+        "combat": combat,
+        "total": eco + combat,
+        "economic_pct": eco / (eco + combat) if eco + combat else 0,
+        "combat_pct": combat / (eco + combat) if eco + combat else 0,
+    }
+
+
+
+

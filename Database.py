@@ -100,6 +100,36 @@ class Database():
 			execute_values(cur, sql, rows)
 			this.dbConnection.commit()
 
+	def addUsersHistory(this, users):
+		rows = []
+		for user in users:
+			rows.append((
+				user.get("id"),
+				user.get("snapshot_at", datetime.now(pytz.utc)),
+				user.get("country"),
+				user.get("mu"),
+				user.get("username"),
+				user.get("level"),
+				user.get("pillStatus"),
+				user.get("buildType"),
+				user.get("isLeveling"),
+				user.get("totalDamage"),
+				user.get("moneyWealth"),
+				user.get("itemWealth"),
+				user.get("equipmentWealth"),
+				user.get("weaponWealth"),
+				user.get("companyWealth"),
+				user.get("totalWealth"),
+			))
+
+		sql = """
+			INSERT INTO public.user_history (user_id, snapshot_at, country_id, mu_id, username, level, pill_status, build_type, is_leveling, total_damage, money_wealth, item_wealth, equipment_wealth, weapon_wealth, company_wealth, total_wealth)
+			VALUES %s;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
 
 	def updateMoneyTransfers(this, moneyTransfers):
 		rows = []

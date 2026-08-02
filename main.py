@@ -7,6 +7,9 @@ schedule.every().hour.at(":01").do(pullCitizens)
 schedule.every().hour.at(":30").do(pullCitizens)
 schedule.every().hour.at(":31").do(pullCitizens)
 
+schedule.every().hour.at(":15").do(pullPlayerHistory)
+schedule.every().hour.at(":45").do(pullPlayerHistory)
+
 schedule.every(4).hours.at(":03").do(updateCountries)
 schedule.every(4).hours.at(":05").do(pullMoneyTransfers)
 schedule.every(4).hours.at(":09").do(getBestRegions)
