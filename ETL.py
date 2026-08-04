@@ -53,8 +53,19 @@ def pullCitizens():
 	users = getUsersBatched(userIDs)
 
 	db = Database()
-	db.updateUsers(users)
 	db.addUsersRaw(users)
+
+def pullMUs():
+	apiClient = APIClient()
+	procedure = "mu.getManyPaginated"
+	payload = {
+		"limit": 100,
+	}
+	mus = apiClient.getByCursor(procedure, payload)
+
+	db = Database()
+	db.updateMUs(mus)
+	db.addMUsRaw(mus)
 
 def pullPlayerHistory():
 	apiClient = APIClient()
@@ -113,6 +124,7 @@ def pullPlayerHistory():
 			raise
 
 	db = Database()
+	db.updateUsers(users)
 	db.addUsersHistory(users)
 
 def updateCountries():

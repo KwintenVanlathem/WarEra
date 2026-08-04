@@ -69,17 +69,80 @@ class Database():
 			this.dbConnection.commit()
 
 
+	def updateMUs(this, mus):
+		rows = []
+		for mu in mus:
+			rows.append((mu.get("_id"), mu.get("name"), mu.get("country")))
+
+		sql = """
+			INSERT INTO public.mu (mu_id, name, country_id)
+			VALUES %s
+			ON CONFLICT (mu_id)
+			DO UPDATE SET
+				name = EXCLUDED.name,
+				country_id = EXCLUDED.country_id;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
+
+
+	def addMUsRaw(this, mus):
+		rows = []
+		for mu in mus:
+			rows.append((datetime.now(pytz.utc), mu.get("_id"), json.dumps(mu)))
+
+		sql = """
+			INSERT INTO public.mu_raw (snapshot_at, mu_id, value)
+			VALUES %s;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
+
+
 	def updateUsers(this, users):
 		rows = []
 		for user in users:
-			rows.append((user.get("_id"), user.get("username")))
+			rows.append((
+				user.get("id"),
+				user.get("country"),
+				user.get("mu"),
+				user.get("username"),
+				user.get("level"),
+				user.get("pillStatus"),
+				user.get("buildType"),
+				user.get("isLeveling"),
+				user.get("totalDamage"),
+				user.get("moneyWealth"),
+				user.get("itemWealth"),
+				user.get("equipmentWealth"),
+				user.get("weaponWealth"),
+				user.get("companyWealth"),
+				user.get("totalWealth")
+			))
 
 		sql = """
-			INSERT INTO public.user ("userID", name)
+			INSERT INTO public.user ("userID", country_id, mu_id, name, level, pill_status, build_type, is_leveling, total_damage, money_wealth, item_wealth, equipment_wealth, weapon_wealth, company_wealth, total_wealth)
 			VALUES %s
 			ON CONFLICT ("userID")
 			DO UPDATE SET
-				name = EXCLUDED.name;
+				country_id = EXCLUDED.country_id,
+				mu_id = EXCLUDED.mu_id,
+				name = EXCLUDED.name,
+				level = EXCLUDED.level,
+				pill_status = EXCLUDED.pill_status,
+				build_type = EXCLUDED.build_type,
+				is_leveling = EXCLUDED.is_leveling,
+				total_damage = EXCLUDED.total_damage,
+				money_wealth = EXCLUDED.money_wealth,
+				item_wealth = EXCLUDED.item_wealth,
+				equipment_wealth = EXCLUDED.equipment_wealth,
+				weapon_wealth = EXCLUDED.weapon_wealth,
+				company_wealth = EXCLUDED.company_wealth,
+				total_wealth = EXCLUDED.total_wealth;
 		"""
 
 		with this.dbConnection.cursor() as cur:
@@ -119,7 +182,7 @@ class Database():
 				user.get("equipmentWealth"),
 				user.get("weaponWealth"),
 				user.get("companyWealth"),
-				user.get("totalWealth"),
+				user.get("totalWealth")
 			))
 
 		sql = """
