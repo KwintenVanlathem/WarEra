@@ -92,15 +92,15 @@ def pullPlayerHistory():
 				"username": user.get("username"),
 				"mu": user.get("mu"),
 				"country": user.get("country"),
-				"level": user.get("leveling").get("level"),
-				"isLeveling": user.get("leveling").get("level") < 20,
+				"level": user.get("leveling", {}).get("level", 0),
+				"isLeveling": user.get("leveling", {}).get("level", 0) < 20,
 				"totalDamage": user.get("rankings", {}).get("userDamages", {}).get("value", 0),
-				"moneyWealth": user.get("stats").get("wealth").get("money"),
-				"itemWealth": user.get("stats").get("wealth").get("items"),
-				"equipmentWealth": user.get("stats").get("wealth").get("equipments"),
-				"weaponWealth": user.get("stats").get("wealth").get("weapons"),
-				"companyWealth": user.get("stats").get("wealth").get("companies"),
-				"totalWealth": user.get("stats").get("wealth").get("total"),
+				"moneyWealth": user.get("stats", {}).get("wealth", {}).get("money", 0),
+				"itemWealth": user.get("stats", {}).get("wealth", {}).get("items", 0),
+				"equipmentWealth": user.get("stats", {}).get("wealth", {}).get("equipments", 0),
+				"weaponWealth": user.get("stats", {}).get("wealth", {}).get("weapons", 0),
+				"companyWealth": user.get("stats", {}).get("wealth", {}).get("companies", 0),
+				"totalWealth": user.get("stats", {}).get("wealth", {}).get("total", 0),
 			}
 
 			if user.get("buffs") == None:
