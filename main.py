@@ -12,11 +12,9 @@ schedule.every().hour.at(":45").do(pullPlayerHistory)
 
 schedule.every(4).hours.at(":03").do(updateCountries)
 schedule.every(4).hours.at(":05").do(pullMoneyTransfers)
-schedule.every(4).hours.at(":09").do(getBestRegions)
-
-#schedule.every(2).hours.at(":07").do(updateAlliedBattles)
 
 schedule.every().day.at("00:00").do(updateRegions)
+schedule.every().day.at("00:00").do(pullMUs)
 
 while True:
 	schedule.run_pending()

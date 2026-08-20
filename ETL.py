@@ -39,16 +39,24 @@ def getUsersBatched(userIDs):
 
 def pullCitizens():
 	apiClient = APIClient()
-	procedure = "user.getUsersByCountry"
-	payload = {
-		"countryId": "6813b6d446e731854c7ac7a4", # Only Belgium for now
-		"limit": 100,
-	}
-	users = apiClient.getByCursor(procedure, payload)
 
 	userIDs = []
-	for user in users:
-		userIDs.append(user.get("_id"))
+	countries = [
+		"6813b6d446e731854c7ac7a4", #Belgium
+		"6813b6d446e731854c7ac7fb" #Luxembourgh
+	]
+
+	procedure = "user.getUsersByCountry"
+
+	for country in countries:
+		payload = {
+			"countryId": country,
+			"limit": 100,
+		}
+		users = apiClient.getByCursor(procedure, payload)
+
+		for user in users:
+			userIDs.append(user.get("_id"))
 
 	users = getUsersBatched(userIDs)
 
@@ -69,16 +77,23 @@ def pullMUs():
 
 def pullPlayerHistory():
 	apiClient = APIClient()
-	procedure = "user.getUsersByCountry"
-	payload = {
-		"countryId": "6813b6d446e731854c7ac7a4", # Only Belgium for now
-		"limit": 100,
-	}
-	users = apiClient.getByCursor(procedure, payload)
-
 	userIDs = []
-	for user in users:
-		userIDs.append(user.get("_id"))
+	countries = [
+		"6813b6d446e731854c7ac7a4", #Belgium
+		"6813b6d446e731854c7ac7fb" #Luxembourgh
+	]
+
+	procedure = "user.getUsersByCountry"
+
+	for country in countries:
+		payload = {
+			"countryId": country,
+			"limit": 100,
+		}
+		users = apiClient.getByCursor(procedure, payload)
+
+		for user in users:
+			userIDs.append(user.get("_id"))
 
 	usersRaw = getUsersBatched(userIDs)
 
