@@ -33,6 +33,7 @@ class Database():
 			cur.execute(sql)
 			for country in cur.fetchall():
 				countryIDs.append(country[0])
+			this.dbConnection.commit()
 
 		return countryIDs
 
@@ -232,6 +233,7 @@ class Database():
 			cur.execute(sql)
 			for battle in cur.fetchall():
 				battleIDs.append(battle[0])
+			this.dbConnection.commit()
 
 		return battleIDs
 
@@ -371,5 +373,26 @@ class Database():
 			cur.execute(sql, (countryID,))
 			for war in cur.fetchall():
 				warIDs.append(war[0])
+			this.dbConnection.commit()
 
 		return warIDs
+
+	def syncDiscord(this, discordUser, userID):
+		sql = """
+			UPDATE public.user
+			SET discord_id = null
+			WHERE discord_id = %s;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			cur.execute(sql, discordUser)
+			this.dbConnection.commit()
+		sql = """
+			UPDATE public.user
+			SET discord_id = %s
+			WHERE "userID" = %s;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			cur.execute(sql, (discordUser, userID))
+			this.dbConnection.commit()
