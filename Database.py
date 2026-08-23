@@ -121,11 +121,13 @@ class Database():
 				user.get("equipmentWealth"),
 				user.get("weaponWealth"),
 				user.get("companyWealth"),
-				user.get("totalWealth")
+				user.get("totalWealth"),
+				user.get("isCongress"),
+				user.get("govPosition")
 			))
 
 		sql = """
-			INSERT INTO public.user ("userID", country_id, mu_id, name, level, pill_status, build_type, is_leveling, total_damage, money_wealth, item_wealth, equipment_wealth, weapon_wealth, company_wealth, total_wealth)
+			INSERT INTO public.user ("userID", country_id, mu_id, name, level, pill_status, build_type, is_leveling, total_damage, money_wealth, item_wealth, equipment_wealth, weapon_wealth, company_wealth, total_wealth, is_congress, gov_role)
 			VALUES %s
 			ON CONFLICT ("userID")
 			DO UPDATE SET
@@ -142,7 +144,9 @@ class Database():
 				equipment_wealth = EXCLUDED.equipment_wealth,
 				weapon_wealth = EXCLUDED.weapon_wealth,
 				company_wealth = EXCLUDED.company_wealth,
-				total_wealth = EXCLUDED.total_wealth;
+				total_wealth = EXCLUDED.total_wealth,
+				is_congress = EXCLUDED.is_congress,
+				gov_role = EXCLUDED.gov_role;
 		"""
 
 		with this.dbConnection.cursor() as cur:

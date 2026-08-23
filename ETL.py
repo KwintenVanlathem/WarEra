@@ -132,6 +132,24 @@ def pullPlayerHistory():
 			else:
 				info["buildType"] = 'hybrid'
 
+			info["isCongress"] = False
+			info["govPosition"] = None
+
+			if user.get("infos") != None:
+				if user.get("infos").get("congressMemberOf") != None:
+					info["isCongress"] = True
+
+				if user.get("infos").get("presidentOf") != None:
+					info["govPosition"] = 'President'
+				elif user.get("infos").get("vicePresidentOf") != None:
+					info["govPosition"] = 'VP'
+				elif user.get("infos").get("minOfDefenseOf") != None:
+					info["govPosition"] = 'MoD'
+				elif user.get("infos").get("minOfEconomyOf") != None:
+					info["govPosition"] = 'MoE'
+				elif user.get("infos").get("minOfForeignAffairsOf") != None:
+					info["govPosition"] = 'MoFA'
+
 			users.append(info)
 
 		except:
