@@ -236,16 +236,15 @@ class Database():
 		knownBattles = []
 		for battle in battles:
 			if battle.get("_id") not in knownBattles:
-				rows.append((battle.get("_id"), battle.get("createdAt"), battle.get("attacker").get("country"), battle.get("defender").get("country"), json.dumps(battle), battle.get("defender").get("region")))
+				rows.append((battle.get("_id"), battle.get("createdAt"), battle.get("attacker").get("country"), battle.get("defender").get("country"), json.dumps(battle), battle.get("defender").get("region"), battle.get("war")))
 				knownBattles.append(battle.get("_id"))
 
 		sql = """
-			INSERT INTO public."battleHistory" ("battleID", "createdAt", "attackerID", "defenderID", "value", "regionID")
+			INSERT INTO public."battleHistory" ("battleID", "createdAt", "attackerID", "defenderID", "value", "regionID", war_id)
 			VALUES %s
 			ON CONFLICT ("battleID")
 			DO UPDATE SET
-				value = EXCLUDED.value,
-				"regionID" = EXCLUDED."regionID";
+				value = EXCLUDED.value;
 		"""
 
 		with this.dbConnection.cursor() as cur:
