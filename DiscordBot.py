@@ -40,9 +40,9 @@ async def notify_priority():
 			war.priority_end
 		FROM war
 		INNER JOIN country c ON c."countryID" IN (war.attacker_id, war.defender_id)
-		INNER JOIN "user" u ON u.country_id = c."countryID" AND u.discord_id IS NOT NULL -- AND u.gov_role IN ('President', 'VP', 'MoD', 'MoFA')
+		INNER JOIN "user" u ON u.country_id = c."countryID" AND u.discord_id IS NOT NULL AND u.gov_role IN ('President', 'VP', 'MoD', 'MoFA')
 		INNER JOIN country e ON e."countryID" IN (war.attacker_id, war.defender_id) AND e."countryID" != u.country_id
-		WHERE (priority_end BETWEEN now() - interval '29 minutes' AND now() + interval '30 minutes' AND c."countryID" = war.has_priority)
+		WHERE (priority_end BETWEEN now() + interval '29 minutes' AND now() + interval '30 minutes' AND c."countryID" = war.has_priority)
 		   OR (priority_end BETWEEN now() - interval  '1 minutes' AND now() - interval  '0 minutes' AND c."countryID" != war.has_priority)
 		GROUP BY
 			e."name",
