@@ -354,6 +354,39 @@ def getBestRegions(itemCodes):
 
 	db = Database()
 	db.updateBonus(regions)
+
+def getWars():
+	# start with still active wars that require update
+	db = Database()
+	warIDs = db.getActiveWars()
+
+	# extend with potential newly declared wars
+	apiClient = APIClient()
+
+	procedure = "event.getEventsPaginated"
+	payload = {
+		"eventTypes": ["warDeclared"],
+		"limit": 100,
+	}
+	results = apiClient.getByCursor(procedure, payload, maxrows=100)
+
+	for result in results:
+		warIDs.append(result.get("data").get("war"))
+
+	distinctWars = list(set(warIDs))
+
+	procedures = ["war.getById"] * len(distinctWars)
+	payload = {
+		str(i): {
+			"warId": str(warID)
+		}
+		for i, warID in enumerate(distinctWars)
+	}
+
+	apiClient = APIClient()
+	result = apiClient.getBatched(procedures, payload)
+
+	db.updateWar(result)
 	
 def skill_points_from_level(level: int) -> int:
     """Returns the total skill points invested to reach a given level."""

@@ -331,3 +331,45 @@ class Database():
 		with this.dbConnection.cursor() as cur:
 			execute_values(cur, sql, rows)
 			this.dbConnection.commit()
+
+	def updateWar(this, wars):
+		rows = []
+		for war in wars:
+			rows.append((war.get("_id"), war.get("isActive"), war.get("priority"), war.get("priorityEndAt"), war.get("defender").get("country"), war.get("attacker").get("country")))
+
+		sql = """
+			INSERT INTO public.war (war_id, is_active, has_priority, priority_end, defender_id, attacker_id)
+			VALUES %s
+			ON CONFLICT ("war_id")
+			DO UPDATE SET
+				has_priority = EXCLUDED.has_priority,
+				priority_end = EXCLUDED.priority_end;
+		"""
+
+		with this.dbConnection.cursor() as cur:
+			execute_values(cur, sql, rows)
+			this.dbConnection.commit()
+
+	def getActiveWars(this, countryID = None):
+		warIDs = []
+
+		if countryID == None:
+			sql = """
+				SELECT war_id
+				FROM public.war
+				WHERE is_active = True;
+			"""
+		else:
+			sql = """
+				SELECT war_id
+				FROM public.war
+				WHERE is_active = True
+				  AND %s IN (attacker_id, defender_id);
+			"""
+
+		with this.dbConnection.cursor() as cur:
+			cur.execute(sql, (countryID,))
+			for war in cur.fetchall():
+				warIDs.append(war[0])
+
+		return warIDs

@@ -22,7 +22,7 @@ class APIClient():
 		response.raise_for_status()
 		return response.json()
 
-	def getByCursor(this, procedure, payload):
+	def getByCursor(this, procedure, payload, maxrows = 0):
 		result = []
 		
 		cursor = None
@@ -43,7 +43,7 @@ class APIClient():
 			cursor = response["result"]["data"].get("nextCursor")
 			result += response["result"]["data"]["items"]
 			
-			if not cursor:
+			if not cursor or (len(result) >= maxrows > 0):
 				return result # dict of items
 
 	def getSimple(this, procedure, payload):

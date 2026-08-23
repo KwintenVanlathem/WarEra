@@ -2,6 +2,7 @@ from ETL import *
 import schedule
 import time
 
+schedule.every().hour.at(":00").do(getWars)
 schedule.every().hour.at(":00").do(pullCitizens)
 schedule.every().hour.at(":01").do(pullCitizens)
 schedule.every().hour.at(":30").do(pullCitizens)
