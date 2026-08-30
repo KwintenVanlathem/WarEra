@@ -7,6 +7,11 @@ def chunk_list(lst, size):
 	for i in range(0, len(lst), size):
 		yield lst[i:i + size]
 
+countries = [
+	"6813b6d446e731854c7ac7a4", #Belgium
+	"6813b6d446e731854c7ac7fb", #Luxembourg
+	"6873d0ea1758b40e712b5eeb", #Ghana
+]
 
 def getUsersBatched(userIDs):
 	result = []
@@ -41,11 +46,6 @@ def pullCitizens():
 	apiClient = APIClient()
 
 	userIDs = []
-	countries = [
-		"6813b6d446e731854c7ac7a4", #Belgium
-		"6813b6d446e731854c7ac7fb", #Luxembourg
-		"6873d0ea1758b40e712b5eeb", #Ghana
-	]
 
 	procedure = "user.getUsersByCountry"
 
@@ -79,11 +79,6 @@ def pullMUs():
 def pullPlayerHistory():
 	apiClient = APIClient()
 	userIDs = []
-	countries = [
-		"6813b6d446e731854c7ac7a4", #Belgium
-		"6813b6d446e731854c7ac7fb" #Luxembourgh
-	]
-
 	procedure = "user.getUsersByCountry"
 
 	for country in countries:
