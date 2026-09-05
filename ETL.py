@@ -11,6 +11,7 @@ countries = [
 	"6813b6d446e731854c7ac7a4", #Belgium
 	"6813b6d446e731854c7ac7fb", #Luxembourg
 	"6873d0ea1758b40e712b5eeb", #Ghana
+	"6873d0ea1758b40e712b5f31", #Equatorial Guinea
 ]
 
 def getUsersBatched(userIDs):
