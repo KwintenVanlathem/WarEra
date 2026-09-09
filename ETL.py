@@ -122,10 +122,12 @@ def pullPlayerHistory():
 			elif user.get("buffs").get("debuffCodes") != None:
 				info["pillStatus"] = 'debuff'
 
+			if skillset.get("economic_pct") > 0.8:
+				info["buildType"] = 'eco'
+			elif user.get("skills", {}).get("lootChance") > user.get("skills", {}).get("attack"):
+				info["buildType"] = 'loot'
 			if skillset.get("combat_pct") > 0.8:
 				info["buildType"] = 'war'
-			elif skillset.get("economic_pct") > 0.8:
-				info["buildType"] = 'eco'
 			else:
 				info["buildType"] = 'hybrid'
 
