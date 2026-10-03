@@ -124,7 +124,7 @@ def pullPlayerHistory():
 
 			if skillset.get("economic_pct") > 0.8:
 				info["buildType"] = 'eco'
-			elif user.get("skills", {}).get("lootChance", {}).get("skill", 0) > user.get("skills", {}).get("attack", {}).get("skill", 0):
+			elif user.get("skills", {}).get("lootChance", {}).get("level", 0) > user.get("skills", {}).get("attack", {}).get("level", 0):
 				info["buildType"] = 'loot'
 			elif skillset.get("combat_pct") > 0.8:
 				info["buildType"] = 'war'
