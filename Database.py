@@ -105,6 +105,14 @@ class Database():
 
 
 	def updateUsers(this, users):
+		sql = """
+			UPDATE public.user
+			SET country = null, mu = null;
+		"""
+		with this.dbConnection.cursor() as cur:
+			cur.execute(sql)
+			this.dbConnection.commit()
+
 		rows = []
 		for user in users:
 			rows.append((
@@ -383,16 +391,15 @@ class Database():
 			SET discord_id = null
 			WHERE discord_id = %s;
 		"""
-
 		with this.dbConnection.cursor() as cur:
 			cur.execute(sql, discordUser)
 			this.dbConnection.commit()
+
 		sql = """
 			UPDATE public.user
 			SET discord_id = %s
 			WHERE "userID" = %s;
 		"""
-
 		with this.dbConnection.cursor() as cur:
 			cur.execute(sql, (discordUser, userID))
 			this.dbConnection.commit()
