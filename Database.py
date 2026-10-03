@@ -107,7 +107,7 @@ class Database():
 	def updateUsers(this, users):
 		sql = """
 			UPDATE public.user
-			SET country = null, mu = null;
+			SET country_id = null, mu_id = null;
 		"""
 		with this.dbConnection.cursor() as cur:
 			cur.execute(sql)
