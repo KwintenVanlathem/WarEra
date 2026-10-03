@@ -374,18 +374,19 @@ def getWars():
 
 	distinctWars = list(set(warIDs))
 
-	procedures = ["war.getById"] * len(distinctWars)
-	payload = {
-		str(i): {
-			"warId": str(warID)
+	for part in chunk_list(distinctWars, 100):
+		procedures = ["war.getById"] * len(part)
+		payload = {
+			str(i): {
+				"warId": str(warID)
+			}
+			for i, warID in enumerate(part)
 		}
-		for i, warID in enumerate(distinctWars)
-	}
 
-	apiClient = APIClient()
-	result = apiClient.getBatched(procedures, payload)
+		apiClient = APIClient()
+		result = apiClient.getBatched(procedures, payload)
 
-	db.updateWar(result)
+		db.updateWar(result)
 	
 def skill_points_from_level(level: int) -> int:
     """Returns the total skill points invested to reach a given level."""
